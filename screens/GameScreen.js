@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 
 import NumberContainer from '../components/NumberContainer';
@@ -8,11 +8,7 @@ const generateRandomBetween = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     const randNum = Math.floor(Math.random() * (max - min)) + min;
-    // if (randNum == exclude) {
-    //     return generateRandomBetween(min, max, exclude);
-    // } else {
     return randNum;
-    // }
 };
 
 
@@ -24,6 +20,15 @@ const GameScreen = props => {
     const [currentGuess, setCurrentGuess] = useState(
         generateRandomBetween(1, 100)
     );
+    const [rounds, setRounds] = useState(0);
+    // extract props
+    const { userChoice, onGameOver } = props;
+    // this runs every time after render the screen
+    useEffect(() => {
+        if (currentGuess === userChoice) {
+            onGameOver(rounds);
+        }
+    }, [currentGuess, userChoice, onGameOver]);
 
     const nextGuessHandler = direction => {
 
@@ -36,8 +41,8 @@ const GameScreen = props => {
 
         if (direction === 'greater' || direction === 'lower') {
             setCurrentGuess(generateRandomBetween(currentMin.current, currentMax.current));
+            setRounds(curRounds => curRounds + 1);
         }
-
 
     }
     return (
@@ -48,6 +53,7 @@ const GameScreen = props => {
                 <Button title="Lower" onPress={nextGuessHandler.bind(this, 'lower')} />
                 <Button title="Greater" onPress={nextGuessHandler.bind(this, 'greater')} />
             </Card>
+            <Text> {rounds}</Text>
         </View>
     );
 }

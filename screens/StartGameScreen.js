@@ -14,18 +14,33 @@ import Input from '../components/Input';
 
 const StartGameScreen = props => {
     const [enteredValue, setEnteredValue] = useState('');
+    const [confirmed, setConfirmed] = useState(false);
+    const [selectedNumber, setSelectedNumber] = useState();
 
     const numberInputHandler = inputText => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
     }
+    const confirmInputHandler = () => {
+        const chosenNumber = parseInt(enteredValue);
+        if (chosenNumber === NaN || chosenNumber <= 0 || chosenNumber > 99) {
+            return;
+        }
+        setConfirmed(true);
+        setSelectedNumber(chosenNumber);
+        setEnteredValue('');
+    };
 
+    let confirmedOutput;
+    if (confirmed) {
+        confirmedOutput = <Text> Chosen Number: {selectedNumber} </Text>
+    }
     return (
         <TouchableWithoutFeedback onPress={() => {
             // to dismiss the keyboard
             Keyboard.dismiss();
         }}>
             <View style={styles.screen}>
-                <Text style={styles.title}> Some text</Text>
+                <Text style={styles.title}>Start New Game!</Text>
                 <Card style={styles.inputContainer}>
                     <Text> Select a Number</Text>
 
@@ -42,13 +57,21 @@ const StartGameScreen = props => {
 
                     <View style={styles.buttonContainer}>
                         <View style={styles.buttonView}>
-                            <Button title="Reset" onPress={() => { }} color={Colors.accent} />
+                            <Button title="Reset"
+                                onPress={() => {
+                                    setEnteredValue('');
+                                    setConfirmed(false);
+                                }}
+                                color={Colors.accent} />
                         </View>
                         <View style={styles.buttonView}>
-                            <Button title="Confirm" onPress={() => { }} color={Colors.primery} />
+                            <Button title="Confirm"
+                                onPress={confirmInputHandler}
+                                color={Colors.primery} />
                         </View>
                     </View>
                 </Card>
+                {confirmedOutput}
             </View>
         </TouchableWithoutFeedback>
     );
